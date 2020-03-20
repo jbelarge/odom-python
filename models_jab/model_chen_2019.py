@@ -26,7 +26,12 @@ class Chen_IEEE(nn.Module):
 
         x = self.FC_in(x)
         x, hidden = self.BiLSTM(x, hidden)
-        x = self.FC_out(x)
+
+        # I believe this is how it should be done...
+        # Note that hidden is a list, where the first
+        # value is the hidden, and the second is the cell.
+        x = self.FC_out(hidden[0])
+        # x = self.FC_out(x)
         return x, hidden
 
     def init_hidden(self):

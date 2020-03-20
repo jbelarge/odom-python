@@ -19,7 +19,7 @@ if __name__=="__main__":
     # Get the data:
     # batch_size = 16
     batch_size = 256 # from paper
-    z = odl.OxfordDataset()
+    z = odl.OxfordDataset(window_samples=200, overlap_samples=190)
     loader = DataLoader(z, batch_size=batch_size, pin_memory=True)
 
     # ----------------
@@ -52,7 +52,11 @@ if __name__=="__main__":
             # Concatenate inputs attitude and acceleration
             # from the sensor along the 2nd dimension,
             # which is basically the index for the data group
-            data_in = torch.cat((sample[1], sample[4]), 2).to(device)
+
+            # Data in should be {acc, omega} both 3-d vectors
+            data_in = torch.cat((sample[4], sample[2]), 2).to(device)
+
+            # data_in = torch.cat((sample[1], sample[4]), 2).to(device)
 
             # A note on permuting:
             # if you have a matrix, the zeroth 'axis' is the
@@ -66,12 +70,17 @@ if __name__=="__main__":
             # og_first  = physical values (I think)
             data_in.permute(1,0,2)
             trans = sample[7].to(device) # translation from truth
+            # I think this should be:
+            trans = torch.cat((sample[7], sample[8]), 2).to(device)
 
 
             # Get the diff. TODO: Understand this better!
+            #avg_trans_rate =
+
             delta_trans = torch.cat((torch.zeros(trans.shape[0], 1, 3, dtype=torch.float32).to(device), (trans[:,1:,:] - trans[:,:-1,:])), 1)
             output, hidden = model(data_in, hidden)
-
+            print("output size = " + str(output.size()))
+            print("delta size  = " + str(delta_trans.size()))
 
             # Note, output and delta_trans must have same shape (?)
             loss = criterion(output, delta_trans)

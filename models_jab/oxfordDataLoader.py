@@ -21,8 +21,8 @@ class OxfordDataset(torch.utils.data.Dataset):
     # ===================================================
 
     def __init__(self,
-                 truthFile='../data/trolley/data1/syn/vi1.csv',
-                 dataFile='../data/trolley/data1/syn/imu1.csv',
+                 truthFile='../data/slow_walking/data1/syn/vi1.csv',
+                 dataFile='../data/slow_walking/data1/syn/imu1.csv',
                  window_samples=200,
                  overlap_samples=0):
         self.sensor = np.loadtxt(dataFile, delimiter=',').astype(np.float32)
